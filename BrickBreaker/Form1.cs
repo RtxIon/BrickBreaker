@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Data;
 using System.Windows.Forms;
 
 namespace BrickBreaker
@@ -5,6 +7,8 @@ namespace BrickBreaker
 
     public partial class Form1 : Form
     {
+        List<List<Rectangle>> bricks = new List<List<Rectangle>>();
+
         bool intersects(Rectangle a, Rectangle b)
         {
             // a is ball |  b is paddle
@@ -19,14 +23,20 @@ namespace BrickBreaker
             }
         }
 
-        void drawBricks(Form form, Brick template, int track, int numOfBricks)
-        {// trying recursion. This funtion is meant to recursively create bricks that fill up the upper & middle portion of the screen.
-            for(int count = track; count < numOfBricks; count++)
+
+
+        void createBricks()
+        {
+            for(int j = 0; j < ((pictureBox1.Bottom) - pictureBox1.Bottom/2) - 1; j++)
             {
-                Rectangle newbrick = new Rectangle(template.x,template.y,template.width,template.height);
-                if()
+                List<Rectangle> row = new List<Rectangle>();
+                for(int i = 0; i < pictureBox1.Right /50; i++)
+                {
+                    Rectangle box = new Rectangle(i, j * 50, 50, 50);
+                    row.Add(box);
+                }
+                bricks.Add(row);
             }
-            Rectangle
         }
 
         Graphics gfx;
@@ -52,6 +62,19 @@ namespace BrickBreaker
 
             pressedKeys = new HashSet<Keys>();
 
+            createBricks();
+            for (int i = 0; i < bricks.Count; i++)
+            {
+                for (int j = 0; j < bricks[i].Count; j++)
+                {
+                    gfx.FillRectangle(Brushes.DarkSlateGray, bricks[i][j]);
+                    gfx.FillRectangle(Brushes.DarkGray, bricks[i][j].X - 3, bricks[i][j].Y - 3, bricks[i][j].Width + 6, bricks[i][j].Height + 6);
+                }
+
+            }
+
+           
+
             //Form.Sizechange // runs whenever the size of the form is changed.
             //https://planetcalc.com/8989/ <- This resource may help in sacaling things to the size of the form (screen).
             /*
@@ -69,6 +92,7 @@ namespace BrickBreaker
             gfx.FillRectangle(Brushes.BurlyWood, paddle);
             gfx.FillEllipse(Brushes.RosyBrown, ball);
 
+           
             ball.X += speed.X;//speed.X;
             ball.Y += speed.Y;//speed.Y;
 
@@ -92,11 +116,18 @@ namespace BrickBreaker
 
             if (pressedKeys.Contains(Keys.Left))
             {
-                paddle.X -= 15;
+                if(paddle.Left >= 0)
+                {
+                    paddle.X -= 15;
+                }
             }
             else if(pressedKeys.Contains(Keys.Right))
             {
-                paddle.X += 15;
+                if(paddle.Right <= pictureBox1.Right)
+                {
+                    paddle.X += 15;
+                }
+                
             }
 
             pictureBox1.Image = bmp;
