@@ -8,7 +8,6 @@ using System.Windows.Forms;
 
 namespace BrickBreaker
 {
-    
     internal class Brick
     {
         public int x;
@@ -25,13 +24,9 @@ namespace BrickBreaker
             this.draw = draw;
         }
 
-
         public void disappear (Graphics gfx, Rectangle brock)
         {// if ball intersects with the brick, make the brick disappear.
-            gfx.FillRectangle(Brushes.BlanchedAlmond, brock);
-            
-
-
+            gfx.FillRectangle(Brushes.BlanchedAlmond, brock); // not a good solution
         }
     }
 }

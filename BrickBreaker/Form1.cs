@@ -2,10 +2,8 @@ using System.Collections;
 using System.Data;
 using System.Windows.Forms;
 using System.Windows.Forms.Automation;
-
 namespace BrickBreaker
 {
-
     public partial class Form1 : Form
     {
         List<List<Rectangle>> bricks = new List<List<Rectangle>>();
@@ -21,7 +19,6 @@ namespace BrickBreaker
         Rectangle ball;
         Rectangle paddle;
         Rectangle block;
-
 
         bool intersects(Rectangle a, Rectangle b)
         {
@@ -42,7 +39,6 @@ namespace BrickBreaker
         {
             for(int j = 0; j < rowCount; j++)
             {
-                
                 List<Rectangle> row = new List<Rectangle>();
                 for(int i = 0; i < pictureBox1.Right /brickWidth; i++)
                 {
@@ -53,14 +49,12 @@ namespace BrickBreaker
             }
         }
 
-       
         public Form1()
         {
             InitializeComponent();
             paddle = new Rectangle(360, 389, 80, 15);
             ball = new Rectangle(384, 318, 30, 30);
             block = new Rectangle(7, 9, 180, 50);
-            
 
             bmp = new Bitmap(pictureBox1.Width, pictureBox1.Height);
 
@@ -88,7 +82,6 @@ namespace BrickBreaker
                     gfx.FillRectangle(Brushes.DarkSlateGray, bricks[i][j]);
                     gfx.DrawRectangle(Pens.Gray, bricks[i][j].X - 3, bricks[i][j].Y - 3, bricks[i][j].Width + 3, bricks[i][j].Height + 3);
                 }
-
             }
 
             ball.X += speed.X;//speed.X;
@@ -97,25 +90,24 @@ namespace BrickBreaker
             if (ball.Top <= 0)
             {
                 speed.Y = Math.Abs(speed.Y);
-                
             }
-            if(ball.Bottom >= ClientSize.Height)
+            if(ball.Bottom >= bmp.Height)
             {
                 lives--;
                 speed.Y = -Math.Abs(speed.Y);
             }
             if (ball.Left <= 0)
             {
-                speed.X = -Math.Abs(speed.X);
+                speed.X = Math.Abs(speed.X);
             }
-            else if (ball.Right >= ClientSize.Width)
+            else if (ball.Right >= bmp.Width)
             {
                 speed.X = -Math.Abs(speed.X);
             }
             if (intersects(ball, paddle))
-            { 
-                speed.X = Math.Abs(speed.X);
-                speed.Y *= -1;
+            {
+                //speed.Y *= -Math.Abs(speed.Y);
+                speed.Y = -Math.Abs(speed.Y);
             }
 
             if (pressedKeys.Contains(Keys.Left))
@@ -127,20 +119,26 @@ namespace BrickBreaker
             }
             else if(pressedKeys.Contains(Keys.Right))
             {
-                if(paddle.Right <= pictureBox1.Right)
+                if(paddle.Right <= bmp.Width)
                 {
                     paddle.X += 15;
                 }
                 
             }
-
-            for(int i = 0; i < bricks.Count; i++) {
-                for(int j = 0; j  < bricks[i].Count; j++)
-                if (bricks[i][j].IntersectsWith(ball))
+            for (int i = 0; i < bricks.Count; i++)
+            {
+                for (int j = 0; j < bricks[i].Count; j++)
                 {
-                    gfx.FillRectangle(Brushes.Maroon, bricks[i][j]);
-                        //speed.Y = -Math.Abs(speed.Y); 
-                        speed.Y *= -1;
+                    if (bricks[i][j].Bottom >= ball.Top && ball.Left >= bricks[i][j].Left && ball.Right <= bricks[i][j].Right)
+                    {
+                        gfx.FillRectangle(Brushes.Maroon, bricks[i][j]);
+                        speed.Y = Math.Abs(speed.Y);
+                    }
+                    if (bricks[i][j].Top >= ball.Top && ball.Left >= bricks[i][j].Left && ball.Right <= bricks[i][j].Right)
+                    {
+                        gfx.FillRectangle(Brushes.Maroon, bricks[i][j]);
+                        speed.Y = -Math.Abs(speed.Y);
+                    }
                 }
             }
 
@@ -151,7 +149,6 @@ namespace BrickBreaker
         {
             pressedKeys.Add(e.KeyCode);
         }
-
         private void Form1_KeyUp(object sender, KeyEventArgs e)
         {
             pressedKeys.Remove(e.KeyCode);
