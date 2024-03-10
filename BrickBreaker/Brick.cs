@@ -26,7 +26,7 @@ namespace BrickBreaker
 
         public void disappear (Graphics gfx, Rectangle brock)
         {// if ball intersects with the brick, make the brick disappear.
-            gfx.FillRectangle(Brushes.BlanchedAlmond, brock); // not a good solution
+            gfx.FillRectangle(Brushes.BlanchedAlmond, brock); // not a good solution.
         }
     }
 }

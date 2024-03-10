@@ -6,7 +6,7 @@ namespace BrickBreaker
 {
     public partial class Form1 : Form
     {
-        List<List<Rectangle>> bricks = new List<List<Rectangle>>();
+        List<Rectangle> bricks = new List<Rectangle>();
         HashSet<Keys> pressedKeys;
         List<Rectangle> blocks = new List<Rectangle>();
         int brickWidth = 150;
@@ -39,13 +39,11 @@ namespace BrickBreaker
         {
             for(int j = 0; j < rowCount; j++)
             {
-                List<Rectangle> row = new List<Rectangle>();
                 for(int i = 0; i < pictureBox1.Right /brickWidth; i++)
                 {
                     Rectangle box = new Rectangle(i*brickWidth, j*brickHeight, brickWidth, brickHeight);
-                    row.Add(box);
+                    bricks.Add(box);
                 }
-                bricks.Add(row);
             }
         }
 
@@ -77,10 +75,10 @@ namespace BrickBreaker
 
             for (int i = 0; i < bricks.Count; i++)
             {
-                for (int j = 0; j < bricks[i].Count; j++)
+                for (int j = 0; j < bricks.Count; j++)
                 {
-                    gfx.FillRectangle(Brushes.DarkSlateGray, bricks[i][j]);
-                    gfx.DrawRectangle(Pens.Gray, bricks[i][j].X - 3, bricks[i][j].Y - 3, bricks[i][j].Width + 3, bricks[i][j].Height + 3);
+                    gfx.FillRectangle(Brushes.DarkSlateGray, bricks[i]);
+                    gfx.DrawRectangle(Pens.Gray, bricks[i].X - 3, bricks[i].Y - 3, bricks[i].Width + 3, bricks[i].Height + 3);
                 }
             }
 
@@ -127,18 +125,21 @@ namespace BrickBreaker
             }
             for (int i = 0; i < bricks.Count; i++)
             {
-                for (int j = 0; j < bricks[i].Count; j++)
+                //need to: 
+                // get specifics on where the ball actually collided with the brick (right, left, corner, top, bottom, etc)
+                // momentum for ball
+                if (bricks[i].Bottom >= ball.Top && ball.Left >= bricks[i].Left && ball.Right <= bricks[i].Right) 
                 {
-                    if (bricks[i][j].Bottom >= ball.Top && ball.Left >= bricks[i][j].Left && ball.Right <= bricks[i][j].Right)
-                    {
-                        gfx.FillRectangle(Brushes.Maroon, bricks[i][j]);
-                        speed.Y = Math.Abs(speed.Y);
-                    }
-                    if (bricks[i][j].Top >= ball.Top && ball.Left >= bricks[i][j].Left && ball.Right <= bricks[i][j].Right)
-                    {
-                        gfx.FillRectangle(Brushes.Maroon, bricks[i][j]);
-                        speed.Y = -Math.Abs(speed.Y);
-                    }
+                    gfx.FillRectangle(Brushes.Maroon, bricks[i]);
+                    bricks.RemoveAt(i);
+                    speed.Y = Math.Abs(speed.Y);
+                    continue;
+                }
+                if (bricks[i].Top >= ball.Top && ball.Left >= bricks[i].Left && ball.Right <= bricks[i].Right)
+                {
+                    gfx.FillRectangle(Brushes.Maroon, bricks[i]); 
+                    bricks.RemoveAt(i);
+                    speed.Y = -Math.Abs(speed.Y);
                 }
             }
 
