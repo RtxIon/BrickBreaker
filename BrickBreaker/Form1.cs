@@ -1,4 +1,6 @@
 using System.Collections;
+using System.ComponentModel.Design;
+using System.ComponentModel.Design.Serialization;
 using System.Data;
 using System.Windows.Forms;
 using System.Windows.Forms.Automation;
@@ -18,7 +20,7 @@ namespace BrickBreaker
         Point speed = new Point(10, 10);
         Rectangle ball;
         Rectangle paddle;
-        Rectangle block;
+        //Rectangle block;
 
         bool intersects(Rectangle a, Rectangle b)
         {
@@ -50,9 +52,9 @@ namespace BrickBreaker
         public Form1()
         {
             InitializeComponent();
-            paddle = new Rectangle(360, 389, 80, 15);
+            paddle = new Rectangle(360, 389, 120, 15);
             ball = new Rectangle(384, 318, 30, 30);
-            block = new Rectangle(7, 9, 180, 50);
+            //block = new Rectangle(7, 9, 180, 50);
 
             bmp = new Bitmap(pictureBox1.Width, pictureBox1.Height);
 
@@ -68,16 +70,26 @@ namespace BrickBreaker
         {
             label1.Text = $"{lives}";
             gfx.Clear(Color.BlanchedAlmond);
-            gfx.FillRectangle(Brushes.DarkGray, block.X - 3, block.Y - 3, block.Width+6, block.Height+6);
-            gfx.FillRectangle(Brushes.LightCyan, block);
+            //gfx.FillRectangle(Brushes.DarkGray, block.X - 3, block.Y - 3, block.Width+6, block.Height+6);
+            //gfx.FillRectangle(Brushes.LightCyan, block);
             gfx.FillRectangle(Brushes.BurlyWood, paddle);
             gfx.FillEllipse(Brushes.RosyBrown, ball);
 
             for (int i = 0; i < bricks.Count; i++)
             {
-                for (int j = 0; j < bricks.Count; j++)
+                if(i <= bricks.Count/3)
                 {
-                    gfx.FillRectangle(Brushes.DarkSlateGray, bricks[i]);
+                        gfx.FillRectangle(Brushes.DarkSlateGray, bricks[i]);
+                        gfx.DrawRectangle(Pens.Gray, bricks[i].X - 3, bricks[i].Y - 3, bricks[i].Width + 3, bricks[i].Height + 3);
+                }
+                if(i <= bricks.Count * (2 / 3))
+                {
+                    gfx.FillRectangle(Brushes.OrangeRed, bricks[i]);
+                    gfx.DrawRectangle(Pens.Gray, bricks[i].X - 3, bricks[i].Y - 3, bricks[i].Width + 3, bricks[i].Height + 3);
+                }
+                else
+                {
+                    gfx.FillRectangle(Brushes.BlueViolet, bricks[i]);
                     gfx.DrawRectangle(Pens.Gray, bricks[i].X - 3, bricks[i].Y - 3, bricks[i].Width + 3, bricks[i].Height + 3);
                 }
             }
@@ -103,10 +115,25 @@ namespace BrickBreaker
                 speed.X = -Math.Abs(speed.X);
             }
             if (intersects(ball, paddle))
-            {
-                //speed.Y *= -Math.Abs(speed.Y);
+            {   
+                if(ball.X <= (paddle.Width / 4) + paddle.X)
+                {
+                    speed.X = -Math.Abs(speed.X*2);
+                }
+                if (ball.X >= (paddle.Width / 1.25) + paddle.X)
+                {
+                    speed.X = Math.Abs(speed.X * 2);
+                }
+               
                 speed.Y = -Math.Abs(speed.Y);
             }
+            //else
+            //{
+            //    if(ball.X > paddle.X + (paddle.Width/4) && ball.X < paddle.X + (paddle.Width / 1.25))
+            //    {
+            //        speed.X = 1;
+            //    }
+            //}
 
             if (pressedKeys.Contains(Keys.Left))
             {
@@ -127,7 +154,8 @@ namespace BrickBreaker
             {
                 //need to: 
                 // get specifics on where the ball actually collided with the brick (right, left, corner, top, bottom, etc)
-                // momentum for ball
+                // add momentum for ball 
+                
                 if (bricks[i].Bottom >= ball.Top && ball.Left >= bricks[i].Left && ball.Right <= bricks[i].Right) 
                 {
                     gfx.FillRectangle(Brushes.Maroon, bricks[i]);
