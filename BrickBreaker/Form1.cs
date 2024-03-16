@@ -19,12 +19,12 @@ namespace BrickBreaker
         int baseYSpeed = 10;
         Graphics gfx;
         Bitmap bmp;
-        Point speed = new Point(10, 10);
-        Rectangle ball;
+        PointF speed = new PointF(10.00f, 10.00f);
+        RectangleF ball;
         Rectangle paddle;
         //Rectangle block;
 
-        bool intersects(Rectangle a, Rectangle b)
+        bool intersects(RectangleF a, Rectangle b)
         {
             // a is ball |  b is paddle
             if (a.IntersectsWith(b))
@@ -55,7 +55,7 @@ namespace BrickBreaker
         {
             InitializeComponent();
             paddle = new Rectangle(360, 389, 120, 15);
-            ball = new Rectangle(384, 318, 30, 30);
+            ball = new RectangleF(384f, 318f, 30f, 30f);
             //block = new Rectangle(7, 9, 180, 50);
 
             bmp = new Bitmap(pictureBox1.Width, pictureBox1.Height);
@@ -117,7 +117,7 @@ namespace BrickBreaker
             {
                 speed.X = -Math.Abs(speed.X);
             }
-            if (intersects(ball, paddle))
+            /*if (intersects(ball, paddle))
             {   
                 if(ball.Bottom <= (paddle.Width / 4) + paddle.X)
                 {
@@ -129,11 +129,30 @@ namespace BrickBreaker
                 }
                
                 speed.Y = -Math.Abs(speed.Y);
-            }
-            else if (intersects(ball,paddle) && ball.Bottom > paddle.X + (paddle.Width / 4) && ball.Bottom < paddle.X + (paddle.Width / 1.25))
+            }*/
+            /*else if (intersects(ball,paddle) && ball.Bottom > paddle.X + (paddle.Width / 4) && ball.Bottom < paddle.X + (paddle.Width / 1.25))
             {
                 speed.X = baseXSpeed * 1;
                 speed.Y = baseYSpeed;
+            }*/
+            /*else*/ if (intersects(ball, paddle))
+            {
+                float lhalf = paddle.Width / 2;
+                
+                if(ball.X <= paddle.X + lhalf)// left half of paddle
+                {
+                    float pos = lhalf - (ball.Width/2);
+                    speed.X *= 10*(pos / lhalf);
+                    //speed.X *= lhalf / ball.X;
+                    //speed.Y = baseYSpeed;
+                }
+                else if(ball.X >= paddle.X + paddle.Width)// right half of paddle
+                {
+                    int pos = paddle.Width / 2;
+                    speed.X *= pos / speed.X;
+                    //speed.X *= rhalf / ball.X;
+                    //speed.Y = baseYSpeed;
+                }
             }
 
             if (pressedKeys.Contains(Keys.Left))
