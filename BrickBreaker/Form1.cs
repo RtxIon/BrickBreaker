@@ -10,19 +10,19 @@ namespace BrickBreaker
     {
         List<Rectangle> bricks = new List<Rectangle>();
         HashSet<Keys> pressedKeys;
-        List<Rectangle> blocks = new List<Rectangle>();
         int brickWidth = 75;
         int brickHeight = 50;
         int rowCount = 3;
         int lives = 3;
         int baseXSpeed = 10;
         int baseYSpeed = 10;
+        bool draw = false;
         Graphics gfx;
         Bitmap bmp;
         PointF speed = new PointF(10.00f, 10.00f);
         RectangleF ball;
         Rectangle paddle;
-        //Rectangle block;
+        List <Brick> bicks = new List<Brick>();
 
         bool intersects(RectangleF a, Rectangle b)
         {
@@ -50,6 +50,7 @@ namespace BrickBreaker
                 }
             }
         }
+       
 
         public Form1()
         {
@@ -66,25 +67,7 @@ namespace BrickBreaker
             pressedKeys = new HashSet<Keys>();
 
             createBricks();
-            int brocks = bricks.Count();
-            for (int i = 0; i < brocks; i++)
-            {
-                if (i <= brocks / 3)
-                {
-                    gfx.FillRectangle(Brushes.DarkSlateGray, bricks[i]);
-                    gfx.DrawRectangle(Pens.Gray, bricks[i].X - 3, bricks[i].Y - 3, bricks[i].Width + 3, bricks[i].Height + 3);
-                }
-                else if (i <= brocks * (2 / 3))
-                {
-                    gfx.FillRectangle(Brushes.OrangeRed, bricks[i]);
-                    gfx.DrawRectangle(Pens.Gray, bricks[i].X - 3, bricks[i].Y - 3, bricks[i].Width + 3, bricks[i].Height + 3);
-                }
-                else if (i > brocks * (2 / 3))
-                {
-                    gfx.FillRectangle(Brushes.BlueViolet, bricks[i]);
-                    gfx.DrawRectangle(Pens.Gray, bricks[i].X - 3, bricks[i].Y - 3, bricks[i].Width + 3, bricks[i].Height + 3);
-                }
-            }
+            
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -96,10 +79,38 @@ namespace BrickBreaker
             gfx.FillRectangle(Brushes.BurlyWood, paddle);
             gfx.FillEllipse(Brushes.RosyBrown, ball);
             
+            int brocks = bricks.Count();
+            int bics = bicks.Count();
+            //if (draw == false)
+            //{
+                for (int i = 0; i < brocks; i++)
+                {
+                    if (i <= brocks / 3)
+                    {
+                        gfx.FillRectangle(Brushes.DarkSlateGray, bricks[i]);
+                        gfx.DrawRectangle(Pens.Gray, bricks[i].X - 3, bricks[i].Y - 3, bricks[i].Width + 3, bricks[i].Height + 3);
+                    }
+                    else if (i <= brocks * (2 / 3))
+                    {
+                        gfx.FillRectangle(Brushes.OrangeRed, bricks[i]);
+                        gfx.DrawRectangle(Pens.Gray, bricks[i].X - 3, bricks[i].Y - 3, bricks[i].Width + 3, bricks[i].Height + 3);
+                    }
+                    else if (i > brocks * (2 / 3))
+                    {
+                        gfx.FillRectangle(Brushes.BlueViolet, bricks[i]);
+                        gfx.DrawRectangle(Pens.Gray, bricks[i].X - 3, bricks[i].Y - 3, bricks[i].Width + 3, bricks[i].Height + 3);
+                    }
+                }
+            //}
+            for (int i = 0; i < brocks; i++)
+                {
+                    
+                }
 
 
 
-            ball.X += speed.X;//speed.X;
+
+                ball.X += speed.X;//speed.X;
             ball.Y += speed.Y;//speed.Y;
 
             if (ball.Top <= 0)

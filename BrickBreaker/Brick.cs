@@ -10,23 +10,19 @@ namespace BrickBreaker
 {
     internal class Brick
     {
-        public int x;
-        public int y;
-        public int width;
-        public int height;
-        public bool draw; // if draw is false, whenever the timer ticks, don't draw the rectangle
-        public Brick (int x, int y, int width, int height, bool draw)
+        //public bool draw; // if draw is false, whenever the timer ticks, don't draw the rectangle
+        public Rectangle bick;
+        public Color color;
+        public Brick (int x, int y, int width, int height,/* bool draw,*/ Color color)
         {
-            this.x = x;
-            this.y = y;
-            this.width = width;
-            this.height = height;
-            this.draw = draw;
+            bick = new Rectangle(x, y, width, height);
+            //this.draw = draw;
+            this.color = color;
         }
 
-        public void disappear (Graphics gfx, Rectangle brock)
-        {// if ball intersects with the brick, make the brick disappear.
-            gfx.FillRectangle(Brushes.BlanchedAlmond, brock); // not a good solution.
+        public void Draw (Graphics gfx)
+        {
+            gfx.FillRectangle(new SolidBrush(color), bick); //very good solution.
         }
     }
 }
