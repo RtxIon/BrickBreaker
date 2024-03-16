@@ -11,7 +11,7 @@ namespace BrickBreaker
         List<Rectangle> bricks = new List<Rectangle>();
         HashSet<Keys> pressedKeys;
         List<Rectangle> blocks = new List<Rectangle>();
-        int brickWidth = 150;
+        int brickWidth = 75;
         int brickHeight = 50;
         int rowCount = 3;
         int lives = 3;
@@ -66,6 +66,25 @@ namespace BrickBreaker
             pressedKeys = new HashSet<Keys>();
 
             createBricks();
+            int brocks = bricks.Count();
+            for (int i = 0; i < brocks; i++)
+            {
+                if (i <= brocks / 3)
+                {
+                    gfx.FillRectangle(Brushes.DarkSlateGray, bricks[i]);
+                    gfx.DrawRectangle(Pens.Gray, bricks[i].X - 3, bricks[i].Y - 3, bricks[i].Width + 3, bricks[i].Height + 3);
+                }
+                else if (i <= brocks * (2 / 3))
+                {
+                    gfx.FillRectangle(Brushes.OrangeRed, bricks[i]);
+                    gfx.DrawRectangle(Pens.Gray, bricks[i].X - 3, bricks[i].Y - 3, bricks[i].Width + 3, bricks[i].Height + 3);
+                }
+                else if (i > brocks * (2 / 3))
+                {
+                    gfx.FillRectangle(Brushes.BlueViolet, bricks[i]);
+                    gfx.DrawRectangle(Pens.Gray, bricks[i].X - 3, bricks[i].Y - 3, bricks[i].Width + 3, bricks[i].Height + 3);
+                }
+            }
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -76,26 +95,9 @@ namespace BrickBreaker
             //gfx.FillRectangle(Brushes.LightCyan, block);
             gfx.FillRectangle(Brushes.BurlyWood, paddle);
             gfx.FillEllipse(Brushes.RosyBrown, ball);
-            int brocks = bricks.Count();
+            
 
-            for (int i = 0; i < brocks; i++)
-            {
-                if(i <= brocks/3)
-                {
-                    gfx.FillRectangle(Brushes.DarkSlateGray, bricks[i]);
-                    gfx.DrawRectangle(Pens.Gray, bricks[i].X - 3, bricks[i].Y - 3, bricks[i].Width + 3, bricks[i].Height + 3);
-                }
-                else if(i <= brocks * (2 / 3))
-                {
-                    gfx.FillRectangle(Brushes.OrangeRed, bricks[i]);
-                    gfx.DrawRectangle(Pens.Gray, bricks[i].X - 3, bricks[i].Y - 3, bricks[i].Width + 3, bricks[i].Height + 3);
-                }
-                else if(i > brocks* (2 / 3))
-                {
-                    gfx.FillRectangle(Brushes.BlueViolet, bricks[i]);
-                    gfx.DrawRectangle(Pens.Gray, bricks[i].X - 3, bricks[i].Y - 3, bricks[i].Width + 3, bricks[i].Height + 3);
-                }
-            }
+
 
             ball.X += speed.X;//speed.X;
             ball.Y += speed.Y;//speed.Y;
@@ -117,41 +119,19 @@ namespace BrickBreaker
             {
                 speed.X = -Math.Abs(speed.X);
             }
-            /*if (intersects(ball, paddle))
-            {   
-                if(ball.Bottom <= (paddle.Width / 4) + paddle.X)
-                {
-                    speed.X = -2*Math.Abs(baseXSpeed);
-                }
-                if (ball.Bottom >= (paddle.Width / 1.25) + paddle.X)
-                {
-                    speed.X = 2*Math.Abs(baseXSpeed);
-                }
-               
-                speed.Y = -Math.Abs(speed.Y);
-            }*/
-            /*else if (intersects(ball,paddle) && ball.Bottom > paddle.X + (paddle.Width / 4) && ball.Bottom < paddle.X + (paddle.Width / 1.25))
-            {
-                speed.X = baseXSpeed * 1;
-                speed.Y = baseYSpeed;
-            }*/
-            /*else*/ if (intersects(ball, paddle))
+             if (intersects(ball, paddle))
             {
                 float lhalf = paddle.Width / 2;
                 
                 if(ball.X <= paddle.X + lhalf)// left half of paddle
                 {
                     float pos = lhalf - (ball.Width/2);
-                    speed.X *= 10*(pos / lhalf);
-                    //speed.X *= lhalf / ball.X;
-                    //speed.Y = baseYSpeed;
+                    speed.X *= pos / lhalf;
                 }
                 else if(ball.X >= paddle.X + paddle.Width)// right half of paddle
                 {
-                    int pos = paddle.Width / 2;
+                    float pos = paddle.Width / 2;
                     speed.X *= pos / speed.X;
-                    //speed.X *= rhalf / ball.X;
-                    //speed.Y = baseYSpeed;
                 }
             }
 
@@ -177,6 +157,7 @@ namespace BrickBreaker
             for (int i = 0; i < bricks.Count; i++)
             {
                 bool hit = false;
+
                 if (bricks[i].Bottom >= ball.Top && ball.Left >= bricks[i].Left && ball.Right <= bricks[i].Right) 
                 {
                     gfx.FillRectangle(Brushes.Maroon, bricks[i]);
