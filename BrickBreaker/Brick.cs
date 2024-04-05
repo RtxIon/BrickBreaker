@@ -10,47 +10,50 @@ namespace BrickBreaker
 {
     internal class Brick
     {
+
         
-        public Rectangle bick;
+
+
+        public Rectangle Bick;
+        public Brush BrushSolid;
         public Rectangle RSide
         {
             get
             {
-                return new Rectangle(bick.X + bick.Width, bick.Y, 1, bick.Height);
+                return new Rectangle(Bick.X + Bick.Width, Bick.Y, 1, Bick.Height);
             }
         }
         public Rectangle LSide
         {
             get
             {
-                return new Rectangle(bick.X, bick.Y, 1, bick.Height);
+                return new Rectangle(Bick.X, Bick.Y, 1, Bick.Height);
             }
         }
         public Rectangle BSide
         {
             get
             {
-                return new Rectangle(bick.X, bick.Y + bick.Height, bick.Width, 1);
+                return new Rectangle(Bick.X, Bick.Y + Bick.Height, Bick.Width, 1);
             }
         }
         public Rectangle TSide
         {
             get
             {
-                return new Rectangle(bick.X, bick.Y, bick.Width, 1);
+                return new Rectangle(Bick.X, Bick.Y, Bick.Width, 1);
             }
         }
             
-        public Color color;
-        public Brick (int x, int y, int width, int height)
+        public Brick (int x, int y, int width, int height, Brush color)
         {
-            bick = new Rectangle(x, y, width, height);
+            Bick = new Rectangle(x, y, width, height);
+            BrushSolid = color;
         }
 
-
-        /*public void Draw (Graphics gfx)
+        public void Draw (Graphics gfx)
         {
-            gfx.FillRectangle(new SolidBrush(color), bick); //very good solution.
-        }*/
+            gfx.FillRectangle(BrushSolid, Bick); //very good solution.
+        }
     }
 }

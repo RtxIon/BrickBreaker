@@ -8,7 +8,6 @@ namespace BrickBreaker
 {
     public partial class Form1 : Form
     {
-        List<Rectangle> bricks = new List<Rectangle>();
         HashSet<Keys> pressedKeys;
         int brickWidth = 75;
         int brickHeight = 50;
@@ -16,15 +15,14 @@ namespace BrickBreaker
         int lives = 3;
         int baseXSpeed = 10;
         int baseYSpeed = 10;
-        bool draw = false;
         Graphics gfx;
         Bitmap bmp;
         PointF speed = new PointF(10.00f, 10.00f);
         RectangleF ball;
         Rectangle paddle;
-        
 
-        List<Brick> bicks = new List<Brick>();
+
+        List<Brick> bricks = new List<Brick>();
 
         bool intersects(RectangleF a, Rectangle b)
         {
@@ -46,9 +44,21 @@ namespace BrickBreaker
                 for (int i = 0; i < pictureBox1.Right / brickWidth; i++)
                 {
                     Rectangle box = new Rectangle(i * brickWidth, j * brickHeight, brickWidth, brickHeight);
-                    Brick bick = new Brick(box.X, box.Y, box.Width, box.Height);
-                    bricks.Add(box);
-                    bicks.Add(bick);
+                    if (j == 0)
+                    {
+                        Brick bick = new Brick(box.X, box.Y, box.Width, box.Height, Brushes.CadetBlue);
+                        bricks.Add(bick);
+                    }
+                    if (j == 1)
+                    {
+                        Brick bick = new Brick(box.X, box.Y, box.Width, box.Height, Brushes.NavajoWhite);
+                        bricks.Add(bick);
+                    }
+                    if (j == 2)
+                    {
+                        Brick bick = new Brick(box.X, box.Y, box.Width, box.Height, Brushes.Firebrick);
+                        bricks.Add(bick);
+                    }
                 }
             }
         }
@@ -56,6 +66,9 @@ namespace BrickBreaker
         public Form1()
         {
             InitializeComponent();
+        }
+        private void Form1_Load(object sender, EventArgs e)
+        {
             paddle = new Rectangle(360, 389, 120, 15);
             ball = new RectangleF(384f, 318f, 30f, 30f);
             //block = new Rectangle(7, 9, 180, 50);
@@ -75,118 +88,112 @@ namespace BrickBreaker
             label1.Text = $"{lives}";
             gfx.Clear(Color.BlanchedAlmond);
             gfx.FillRectangle(Brushes.BurlyWood, paddle);
-            gfx.FillRectangle(Brushes.RosyBrown, ball);
+            gfx.FillEllipse(Brushes.RosyBrown, ball);
+            
 
-            int brocks = bricks.Count();
-            int bics = bicks.Count();
-            while (lives > 0)
-            { 
-                for (int i = 0; i < bricks.Count; i++)
+            int brocks = bricks.Count;
+            //while (lives > 0)
+            //{ 
+
+
+            for(int i = 0; i < bricks.Count; i++)
+            {
+                bricks[i].Draw(gfx);
+                gfx.DrawRectangle(Pens.Gray, bricks[i].Bick.X - 1, bricks[i].Bick.Y - 1, bricks[i].Bick.Width + 1, bricks[i].Bick.Height + 1);
+            }
+            ball.X += speed.X;//speed.X;
+            ball.Y += speed.Y;//speed.Y;
+
+            if (ball.Top <= 0)
+            {
+                speed.Y = Math.Abs(speed.Y);
+            }
+            if (ball.Bottom >= bmp.Height + 5)
+            {
+                lives--;
+                speed.Y = -Math.Abs(speed.Y);
+            }
+            if (ball.Left <= 0)
+            {
+                speed.X = Math.Abs(speed.X);
+            }
+            else if (ball.Right >= bmp.Width)
+            {
+                speed.X = -Math.Abs(speed.X);
+            }
+            if (intersects(ball, paddle))
+            {
+                float lhalf = paddle.Width / 2;
+
+                if (ball.X <= paddle.X + lhalf)// left half of paddle
                 {
-                    if (i <= brocks / 3)
-                    {
-                        gfx.FillRectangle(Brushes.DarkSlateGray, bricks[i]);
-                        gfx.DrawRectangle(Pens.Gray, bricks[i].X - 3, bricks[i].Y - 3, bricks[i].Width + 3, bricks[i].Height + 3);
-                    }
-                    else if (i <= brocks * (2 / 3))
-                    {
-                        gfx.FillRectangle(Brushes.OrangeRed, bricks[i]);
-                        gfx.DrawRectangle(Pens.Gray, bricks[i].X - 3, bricks[i].Y - 3, bricks[i].Width + 3, bricks[i].Height + 3);
-                    }
-                    else if (i > brocks * (2 / 3))
-                    {
-                        gfx.FillRectangle(Brushes.BlueViolet, bricks[i]);
-                        gfx.DrawRectangle(Pens.Gray, bricks[i].X - 3, bricks[i].Y - 3, bricks[i].Width + 3, bricks[i].Height + 3);
-                    }
+                    float pos = lhalf - (ball.Width / 2);
+                    speed.X *= pos / lhalf;
                 }
-
-                ball.X += speed.X;//speed.X;
-                ball.Y += speed.Y;//speed.Y;
-
-                if (ball.Top <= 0)
+                else if (ball.X >= paddle.X + paddle.Width)// right half of paddle
                 {
+                    float pos = paddle.Width / 2;
+                    speed.X *= pos / speed.X;
+                }
+                speed.Y = -Math.Abs(speed.Y);
+            }
+
+            if (pressedKeys.Contains(Keys.Left))
+            {
+                if (paddle.Left >= 0)
+                {
+                    paddle.X -= 15;
+                }
+            }
+            else if (pressedKeys.Contains(Keys.Right))
+            {
+                if (paddle.Right <= bmp.Width)
+                {
+                    paddle.X += 15;
+                }
+            }
+
+            for (int i = 0; i < bricks.Count; i++)
+            {
+                bool hit = false;
+                if (ball.IntersectsWith(bricks[i].BSide))
+                {
+                    bricks[i].BrushSolid = Brushes.Maroon;
+                    bricks[i].Draw(gfx);
+                    hit = true;
                     speed.Y = Math.Abs(speed.Y);
                 }
-                if (ball.Bottom >= bmp.Height + 5)
+                if (ball.IntersectsWith(bricks[i].TSide))
                 {
-                    lives--;
+                    bricks[i].BrushSolid = Brushes.Maroon;
+                    bricks[i].Draw(gfx);
+                    hit = true;
                     speed.Y = -Math.Abs(speed.Y);
                 }
-                if (ball.Left <= 0)
+                if (ball.IntersectsWith(bricks[i].RSide))
                 {
-                    speed.X = Math.Abs(speed.X);
+                    bricks[i].BrushSolid = Brushes.Maroon;
+                    bricks[i].Draw(gfx);
+                    hit = true;
+                    speed.X = 2 * Math.Abs(baseXSpeed);
                 }
-                else if (ball.Right >= bmp.Width)
+                if (ball.IntersectsWith(bricks[i].LSide))
                 {
-                    speed.X = -Math.Abs(speed.X);
+                    bricks[i].BrushSolid = Brushes.Maroon;
+                    bricks[i].Draw(gfx);
+                    hit = true;
+                    speed.X = -2 * Math.Abs(baseYSpeed);
                 }
-                if (intersects(ball, paddle))
+                if (hit)
                 {
-                    float lhalf = paddle.Width / 2;
-
-                    if (ball.X <= paddle.X + lhalf)// left half of paddle
-                    {
-                        float pos = lhalf - (ball.Width / 2);
-                        speed.X *= pos / lhalf;
-                    }
-                    else if (ball.X >= paddle.X + paddle.Width)// right half of paddle
-                    {
-                        float pos = paddle.Width / 2;
-                        speed.X *= pos / speed.X;
-                    }
-                    speed.Y = -Math.Abs(speed.Y);
+                    bricks.RemoveAt(i);
                 }
 
-                if (pressedKeys.Contains(Keys.Left))
-                {
-                    if (paddle.Left >= 0)
-                    {
-                        paddle.X -= 15;
-                    }
-                }
-                else if (pressedKeys.Contains(Keys.Right))
-                {
-                    if (paddle.Right <= bmp.Width)
-                    {
-                        paddle.X += 15;
-                    }
-                }
 
-                for (int i = 0; i < bricks.Count(); i++)
-                {
-                    bool hit = false;
-
-                    if (ball.IntersectsWith(bicks[i].BSide))
-                    {
-                        gfx.FillRectangle(Brushes.Maroon, bricks[i]);
-                        hit = true;
-                        speed.Y = Math.Abs(speed.Y);
-                    }
-                    if (ball.IntersectsWith(bicks[i].TSide))
-                    {
-                        gfx.FillRectangle(Brushes.Maroon, bricks[i]);
-                        hit = true;
-                        speed.Y = -Math.Abs(speed.Y);
-                    }
-                    if (ball.IntersectsWith(bicks[i].RSide))
-                    {
-                        gfx.FillRectangle(Brushes.Maroon, bricks[i]);
-                        hit = true;
-                        speed.X = 2 * Math.Abs(baseXSpeed);
-                    }
-                    if (ball.IntersectsWith(bicks[i].LSide))
-                    {
-                        gfx.FillRectangle(Brushes.Maroon, bricks[i]);
-                        hit = true;
-                        speed.X = -2 * Math.Abs(baseYSpeed);
-                    }
-                    if(hit)
-                    {
-                        bricks.RemoveAt(i);
-                    }
-                }
                 pictureBox1.Image = bmp;
+
             }
+           
         }
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
