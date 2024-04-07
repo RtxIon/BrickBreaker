@@ -2,6 +2,7 @@ using System.Collections;
 using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
 using System.Data;
+using System.Text;
 using System.Windows.Forms;
 using System.Windows.Forms.Automation;
 namespace BrickBreaker
@@ -69,8 +70,9 @@ namespace BrickBreaker
         }
         private void Form1_Load(object sender, EventArgs e)
         {
+            losePanel.Visible = false;
             paddle = new Rectangle(360, 389, 120, 15);
-            ball = new RectangleF(384f, 318f, 30f, 30f);
+            ball = new RectangleF(384f, 290f, 15, 15);
             //block = new Rectangle(7, 9, 180, 50);
 
             bmp = new Bitmap(pictureBox1.Width, pictureBox1.Height);
@@ -85,18 +87,19 @@ namespace BrickBreaker
 
         private void timer1_Tick(object sender, EventArgs e)
         {
+            if(lives < 0)
+            {
+                timer1.Stop();
+                losePanel.Visible = true;
+            }
             label1.Text = $"{lives}";
             gfx.Clear(Color.BlanchedAlmond);
             gfx.FillRectangle(Brushes.BurlyWood, paddle);
             gfx.FillEllipse(Brushes.RosyBrown, ball);
-            
 
             int brocks = bricks.Count;
-            //while (lives > 0)
-            //{ 
-
-
-            for(int i = 0; i < bricks.Count; i++)
+            
+            for (int i = 0; i < bricks.Count; i++)
             {
                 bricks[i].Draw(gfx);
                 gfx.DrawRectangle(Pens.Gray, bricks[i].Bick.X - 1, bricks[i].Bick.Y - 1, bricks[i].Bick.Width + 1, bricks[i].Bick.Height + 1);
@@ -111,6 +114,10 @@ namespace BrickBreaker
             if (ball.Bottom >= bmp.Height + 5)
             {
                 lives--;
+                speed = new Point(0, 0);
+                ball.X = 384;
+                ball.Y = 290;
+                restartTimer.Enabled = true;
                 speed.Y = -Math.Abs(speed.Y);
             }
             if (ball.Left <= 0)
@@ -142,14 +149,14 @@ namespace BrickBreaker
             {
                 if (paddle.Left >= 0)
                 {
-                    paddle.X -= 15;
+                    paddle.X -= 17;
                 }
             }
             else if (pressedKeys.Contains(Keys.Right))
             {
                 if (paddle.Right <= bmp.Width)
                 {
-                    paddle.X += 15;
+                    paddle.X += 17;
                 }
             }
 
@@ -188,12 +195,8 @@ namespace BrickBreaker
                 {
                     bricks.RemoveAt(i);
                 }
-
-
                 pictureBox1.Image = bmp;
-
             }
-           
         }
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
@@ -202,6 +205,26 @@ namespace BrickBreaker
         private void Form1_KeyUp(object sender, KeyEventArgs e)
         {
             pressedKeys.Remove(e.KeyCode);
+        }
+
+        private void restartTimer_Tick(object sender, EventArgs e)
+        {
+            restartTimer.Enabled = false;
+            speed = new Point(7, 10);
+        }
+
+        private void restartButton_Click(object sender, EventArgs e)
+        {
+            createBricks();
+            losePanel.Hide();
+            lives = 3;
+            ball.X = 384;
+            ball.Y = 290;
+            speed = new Point(10, 10);
+            paddle.X = 360;
+            pressedKeys.Clear();
+            timer1.Start();
+            
         }
     }
 }
